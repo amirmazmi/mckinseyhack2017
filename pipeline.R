@@ -189,7 +189,83 @@ fileout <- paste("./result/result H", strftime( now(),"%H"),
 write.csv( outputfinal, fileout, quote=F, row.names=F)
 
 
+
+
+
+###########################################################
+# junc1 final result - for github pages
+###########################################################
+
+# wrangle
+
+# train data
+junc1train <- dftrain[[1]]
+# predicted output 
+junc1 <- juncoutput[[1]]
+
+junc1$DateTime <-  ymd_hms( paste( paste( junc1$year, junc1$month, junc1$day, sep="-"),
+                            paste(junc1$hour, ":00:00", sep=""),
+                            sep=" ") )
+junc2 <- junc1[order(junc1$DateTime),]
+
+
+# combine
+junc1out <- rbind( junc1train[,c("DateTime", "Vehicles")],
+                   junc2[,c("DateTime", "Vehicles")])
+
 #---------------------------------------------------------    
+# plot
+
+png(filename = "./pictures/2017-11-20-results.png",
+    width = 960, height = 720, res=96)
+
+par( mar=c(5.1, 5.1, 4.1, 1.1))
+layout( matrix( c(1,2),2,1, byrow=T))
+
+# plot whole series
+plot( junc1out$DateTime, junc1out$Vehicles, type="l",
+      main="Predictions - Vehicles over time", 
+      ylab="vehicles",
+      xlab="time", xaxt='n')
+lines( junc1train$DateTime, junc1train$Vehicles, type="l", col="blue")
+lines( junc2$DateTime, junc2$Vehicles, type="l", col="red")
+axis.POSIXct(side=1, 
+             at=seq( min(junc1out$DateTime), max(junc1out$DateTime),
+                     by="1 month"),
+             format="%e %b'%y")
+legend( "topleft", c("training", "predicted"), col=c("blue","red"), 
+        lty=1, cex=0.8, pt.cex=5)
+
+# plot zoomed in 
+start <- 12500
+end <- nrow(junc1out)
+
+plot( junc1out$DateTime[start:end], junc1out$Vehicles[start:end], type="l",
+      main="Predictions - Vehicles over time", 
+      ylab="vehicles",
+      xlab="time", xaxt='n')
+lines( junc1train$DateTime[start:14448], junc1train$Vehicles[start:14448],
+       type="l", col="blue")
+lines( junc2$DateTime, junc2$Vehicles, type="l", col="red")
+axis.POSIXct(side=1, 
+             at=seq( min(junc1out$DateTime[start:end]),
+                     max(junc1out$DateTime[start:end]),
+                     by="1 month"),
+             format="%e %b'%y")
+mtext( text="zoomed in", side=3, line=0.5)
+legend( "topleft", c("training", "predicted"), col=c("blue","red"),
+        lty=1, cex=0.8, pt.cex=5)
+
+dev.off()
+
+
+
+
+
+par( mfrow=c(1,1))
+
+
+
 
 
 
