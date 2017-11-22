@@ -7,5 +7,6 @@ Prize:
 1. Hiring as Data Scientist if meets minimum qualification
 2. All expense paid trip to any international analytics conference of choice as a guest of McKinsey
 <br><br>
+
 Challenge: To predict the traffic across four different junctions. 
 
